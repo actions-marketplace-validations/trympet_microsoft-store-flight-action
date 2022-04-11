@@ -1,8 +1,9 @@
 #
+
 This is a GitHub Action to deploy package flight submissions to Microsoft Store. The project is a fork of [windows-store-action
 ](https://github.com/isaacrlevin/windows-store-action). Most of the code is "borrowed from the already existing [Azure DevOps extension](https://marketplace.visualstudio.com/items?itemName=MS-RDX-MRO.windows-store-publish) of a similar name.
 
-**NOTE**: I am not a very experienced with MSIX and App Bundling in general and I may not be doing the right things here, but it works for [the app I wrote this for](https://github.com/isaacrlevin/PresenceLight).
+**NOTE**: This is an unofficial, community made extension. It is not affiliated with or endorsed by Microsoft.
 
 
 
