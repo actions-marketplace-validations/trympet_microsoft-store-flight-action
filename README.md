@@ -86,13 +86,14 @@ jobs:
         name: ReleaseSigned
         path: "${{ github.workspace }}/ReleaseSigned"
 
-    - uses: isaacrlevin/windows-store-action
-      name: Publish to Store
+    - uses: trympet/microsoft-store-flight-action@v1
+      name: Publish flight package
       with:
         tenant-id: ${{ secrets.AZURE_AD_TENANT_ID }}
         client-id: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
         client-secret: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
         app-id: ${{ secrets.STORE_APP_ID }}
+        flight-id: ${{ secrets.STORE_FLIGHT_ID }}
         package-path: "${{ github.workspace }}/ReleaseSigned/MyApp.appxupload"
 
 
