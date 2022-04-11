@@ -12,6 +12,8 @@ var currentToken: request.AccessToken;
 
 /** The app ID we are publishing to */
 var appId: string;
+/** The flight we are submitting to */
+var flightId: string;
 
 var packages: string[] = [];
 
@@ -82,6 +84,7 @@ export async function publishTask() {
     credentials
   );
   appId = core.getInput("app-id"); // Globally set app ID for future steps.
+  flightId = core.getInput("flight-id");
 
   console.log("Creating submission...");
   var submissionResource = await createAppSubmission();
@@ -120,7 +123,7 @@ export async function publishTask() {
     );
   } else {
     console.log("Polling submission...");
-    var resourceLocation = `applications/${appId}/submissions/${submissionResource.id}`;
+    var resourceLocation = `applications/${appId}/flights/${flightId}/submissions/${submissionResource.id}`;
     await api.pollSubmissionStatus(
       currentToken,
       resourceLocation,
@@ -138,7 +141,7 @@ export async function publishTask() {
 function createAppSubmission(): Q.Promise<any> {
   return api.createSubmission(
     currentToken,
-    api.ROOT + "applications/" + appId + "/submissions"
+    api.ROOT + "applications/" + appId + "/flights/" + flightId + "/submissions"
   );
 }
 
@@ -211,6 +214,8 @@ function commitAppSubmission(submissionId: string): Q.Promise<void> {
     api.ROOT +
       "applications/" +
       appId +
+      "/flights/" +
+      flightId +
       "/submissions/" +
       submissionId +
       "/commit"
@@ -237,6 +242,8 @@ function putMetadata(submissionResource: any): Q.Promise<void> {
     api.ROOT +
     "applications/" +
     appId +
+    "/flights/" +
+    flightId +
     "/submissions/" +
     submissionResource.id;
 

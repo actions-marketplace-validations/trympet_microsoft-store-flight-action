@@ -1,7 +1,7 @@
 {
-  "name": "windows-store-action",
+  "name": "microsoft-store-flight-action",
   "version": "1.0.0",
-  "description": "GitHub Action to deploy MSIX Packages to the Windows Store. Most code was taken from https://github.com/Microsoft/windows-dev-center-vsts-extension",
+  "description": "GitHub Action to upload and manage package flights in Microsoft Store. Fork of https://github.com/isaacrlevin/windows-store-action",
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev --respawn src/publish.ts",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/isaacrlevin/windows-store-action.git"
+    "url": "git+https://github.com/trympet/microsoft-store-flight-action.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/isaacrlevin/windows-store-action/issues"
+    "url": "https://github.com/trympet/microsoft-store-flight-action/issues"
   },
-  "homepage": "https://github.com/isaacrlevin/windows-store-action#readme",
+  "homepage": "https://github.com/trympet/microsoft-store-flight-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",

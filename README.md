@@ -1,5 +1,6 @@
 #
-This is a GitHub Action to deploy MSIX Packages to the Windows Store. Most of the code is "borrowed from the already existing [Azure DevOps extension](https://marketplace.visualstudio.com/items?itemName=MS-RDX-MRO.windows-store-publish) of a similar name.
+This is a GitHub Action to deploy package flight submissions to Microsoft Store. The project is a fork of [windows-store-action
+](https://github.com/isaacrlevin/windows-store-action). Most of the code is "borrowed from the already existing [Azure DevOps extension](https://marketplace.visualstudio.com/items?itemName=MS-RDX-MRO.windows-store-publish) of a similar name.
 
 **NOTE**: I am not a very experienced with MSIX and App Bundling in general and I may not be doing the right things here, but it works for [the app I wrote this for](https://github.com/isaacrlevin/PresenceLight).
 
@@ -49,6 +50,8 @@ See more details on how to create a new Azure AD application account in your org
 This action allows you to publish your app on the Store by creating a submission in Dev Center. It has the following parameters:
 
 * Application ID (*string, required*) - The identification for the app. Depending on your selection, this should be either the app ID (visible in the URL of the app's page on Dev Center) or the app primary name (visible on the app's page on Dev Center).
+
+* Flight ID (*string, required*) - The ID of the package flight for package submission. Check the URL in Parter Center if you are unsure.
 
 * Delete pending submissions (*bool*) - If checked, will attempt to delete any in-progress submission before starting a new one. Note that only one submission at a time can be pending. Therefore, if this box is not checked and a submission is already pending, the task will fail. Furthermore, submissions created on the Dev Center UI cannot be deleted automatically by the task.
 

@@ -1,6 +1,6 @@
-name: 'Windows Store Publish'
-author: 'Isaac Levin'
-description: 'Greet someone and record the time'
+name: 'Microsoft Store Flight'
+author: 'Isaac Levin, Trym Lund Flogard'
+description: 'Update flight submissions for Microsoft Store packages'
 inputs:
   tenant-id:
     description: 'Id of Partner Tenant'
@@ -13,6 +13,9 @@ inputs:
     required: true
   app-id:
     description: 'Id for App in Partner Center'
+    required: true
+  flight-id:
+    description: 'Id of package flight in Partner Center'
     required: true
   delete-pending:
     description: 'Delete any pending submissions in Partner Center'
