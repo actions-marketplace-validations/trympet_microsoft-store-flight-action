@@ -45,7 +45,7 @@ const STRING_ARRAY_ATTRIBUTES = {
 
 const packageExtensions = [".msix", ".msixbundle", ".msixupload", ".appx", ".appxbundle", ".appxupload", ".xap"];
 
-const getInput = (name: string): string => getInput(name) || process.env[name];
+const getInput = (name: string): string => core.getInput(name) || process.env[name];
 
 /**
  * The main task function.
@@ -63,7 +63,7 @@ export async function publishTask() {
     clientSecret: getInput("client-secret"),
   };
 
-  var files = fs.readdirSync(getInput("package-path");
+  var files = fs.readdirSync(getInput("package-path"));
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
@@ -95,7 +95,7 @@ export async function publishTask() {
   if (getInput("delete-packages") === "true") {
     console.log("Deleting old packages...");
     api.deleteOldPackages(
-      submissionResource.applicationPackages,
+      submissionResource.flightPackages,
       +getInput("packages-keep")
     );
   }
