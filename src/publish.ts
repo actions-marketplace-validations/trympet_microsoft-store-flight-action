@@ -1,6 +1,5 @@
 ﻿require("dotenv").config();
 import core from "@actions/core";
-
 import fs = require("fs");
 import path = require("path");
 import api = require("./common/apiHelper");
@@ -57,12 +56,12 @@ export async function publishTask() {
     "https://manage.devcenter.microsoft.com" + api.API_URL_VERSION_PART;
 
   var credentials = {
-    tenant: core.getInput("tenant-id"),
-    clientId: core.getInput("client-id"),
-    clientSecret: core.getInput("client-secret"),
+    tenant: core.getInput("tenant-id") || process.env["tenant-id"],
+    clientId: core.getInput("client-id") || process.env["client-id"],
+    clientSecret: core.getInput("client-secret") || process.env["client-secret"],
   };
 
-  var files = fs.readdirSync(core.getInput("package-path"));
+  var files = fs.readdirSync(core.getInput("package-path") || process.env["package-path"]);
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
@@ -75,7 +74,7 @@ export async function publishTask() {
   }
 
  packages = packages.map((file) => {
-    return path.join(core.getInput("package-path"), file);
+    return path.join(core.getInput("package-path")  || process.env["package-path"], file);
   });
 
   console.log("Authenticating...");
@@ -83,8 +82,8 @@ export async function publishTask() {
     "https://manage.devcenter.microsoft.com",
     credentials
   );
-  appId = core.getInput("app-id"); // Globally set app ID for future steps.
-  flightId = core.getInput("flight-id");
+  appId = core.getInput("app-id") || process.env["app-id"]; // Globally set app ID for future steps.
+  flightId = core.getInput("flight-id") || process.env["flight-id"];
 
   console.log("Creating submission...");
   var submissionResource = await createAppSubmission();
