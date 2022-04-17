@@ -86,6 +86,13 @@ export async function publishTask() {
   );
   appId = getInput("app-id"); // Globally set app ID for future steps.
   flightId = getInput("flight-id");
+  if (getInput("delete-pending") === "true") {
+    var pendingResource = await getPendingSubmissionResource();
+    if (pendingResource) {
+      console.log(`Found pending submission`);
+      await deleteAppSubmission(pendingResource);
+    }
+  }
 
   console.log("Creating submission...");
   var submissionResource = await createAppSubmission();
@@ -147,10 +154,22 @@ function createAppSubmission(): Q.Promise<any> {
 }
 
 /**
+ * Creates a submission for a given app.
+ * @return Promises the new submission resource.
+ */
+function getPendingSubmissionResource(): Q.Promise<string | null> {
+  return api.getPendingFlightSubmissionResource(
+    currentToken,
+    appId,
+    flightId
+  );
+}
+
+/**
  * @return Promises the deletion of a resource
  */
 function deleteAppSubmission(submissionLocation: string): Q.Promise<void> {
-  return api.deleteSubmission(currentToken, api.ROOT + submissionLocation);
+  return api.deleteSubmission(currentToken, `${api.ROOT}applications/${appId}/${submissionLocation}`);
 }
 
 /**

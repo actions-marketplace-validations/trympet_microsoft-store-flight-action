@@ -283,6 +283,27 @@ export function getAppResource(
 }
 
 /**
+ * @return Promises the resource associated with a pending flight submissions; otherwise null.
+ */
+export function getPendingFlightSubmissionResource(
+  token: request.AccessToken,
+  appId: string,
+  flightId: string
+): Q.Promise<string | null> {
+  console.debug(`Getting pending submissions`);
+  var requestParams = {
+    url: ROOT + `applications/${appId}/flights/${flightId}`,
+    method: "GET",
+  };
+
+  var getGenerator = () =>
+    request.performAuthenticatedRequest<any>(token, requestParams);
+  return request.withRetry(NUM_RETRIES, getGenerator, (err) =>
+    request.isRetryableError(err)
+  ).then(result => result.pendingFlightSubmission?.resourceLocation);
+}
+
+/**
  * @return Promises the deletion of a resource
  */
 export function deleteSubmission(
