@@ -45,6 +45,8 @@ const STRING_ARRAY_ATTRIBUTES = {
 
 const packageExtensions = [".msix", ".msixbundle", ".msixupload", ".appx", ".appxbundle", ".appxupload", ".xap"];
 
+const getInput = (name: string): string => getInput(name) || process.env[name];
+
 /**
  * The main task function.
  */
@@ -56,12 +58,12 @@ export async function publishTask() {
     "https://manage.devcenter.microsoft.com" + api.API_URL_VERSION_PART;
 
   var credentials = {
-    tenant: core.getInput("tenant-id") || process.env["tenant-id"],
-    clientId: core.getInput("client-id") || process.env["client-id"],
-    clientSecret: core.getInput("client-secret") || process.env["client-secret"],
+    tenant: getInput("tenant-id"),
+    clientId: getInput("client-id"),
+    clientSecret: getInput("client-secret"),
   };
 
-  var files = fs.readdirSync(core.getInput("package-path") || process.env["package-path"]);
+  var files = fs.readdirSync(getInput("package-path");
 
   for (var i = 0; i < files.length; i++) {
     var file = files[i];
@@ -74,7 +76,7 @@ export async function publishTask() {
   }
 
  packages = packages.map((file) => {
-    return path.join(core.getInput("package-path")  || process.env["package-path"], file);
+    return path.join(getInput("package-path"), file);
   });
 
   console.log("Authenticating...");
@@ -82,19 +84,19 @@ export async function publishTask() {
     "https://manage.devcenter.microsoft.com",
     credentials
   );
-  appId = core.getInput("app-id") || process.env["app-id"]; // Globally set app ID for future steps.
-  flightId = core.getInput("flight-id") || process.env["flight-id"];
+  appId = getInput("app-id"); // Globally set app ID for future steps.
+  flightId = getInput("flight-id");
 
   console.log("Creating submission...");
   var submissionResource = await createAppSubmission();
   var submissionUrl = `https://developer.microsoft.com/en-us/dashboard/apps/${appId}/submissions/${submissionResource.id}`;
   console.log(`Submission ${submissionUrl} was created successfully`);
 
-  if (core.getInput("delete-packages") === "true") {
+  if (getInput("delete-packages") === "true") {
     console.log("Deleting old packages...");
     api.deleteOldPackages(
       submissionResource.applicationPackages,
-      +core.getInput("packages-keep")
+      +getInput("packages-keep")
     );
   }
 
@@ -115,7 +117,7 @@ export async function publishTask() {
   console.log("Committing submission...");
   await commitAppSubmission(submissionResource.id);
 
-  if (core.getInput("skip-polling") === "true") {
+  if (getInput("skip-polling") === "true") {
     console.log("Skip polling option is checked. Skipping polling...");
     console.log(
       `Click here ${submissionUrl} to check the status of the submission in Dev Center`
@@ -155,7 +157,7 @@ function deleteAppSubmission(submissionLocation: string): Q.Promise<void> {
  * @return Promises the resource associated with the application given to the task.
  */
 async function getAppResource() {
-  return api.getAppResource(currentToken, core.getInput("app-id"));
+  return api.getAppResource(currentToken, getInput("app-id"));
 }
 
 /**
