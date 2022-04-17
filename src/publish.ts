@@ -234,7 +234,7 @@ function putMetadata(submissionResource: any): Q.Promise<void> {
   // Also at this point add the given packages to the list of packages to upload.
   api.includePackagesInSubmission(
     packages,
-    submissionResource.applicationPackages
+    submissionResource.flightPackages
   );
 
   var url =
