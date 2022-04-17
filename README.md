@@ -94,7 +94,10 @@ jobs:
         client-secret: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
         app-id: ${{ secrets.STORE_APP_ID }}
         flight-id: ${{ secrets.STORE_FLIGHT_ID }}
-        package-path: "${{ github.workspace }}/ReleaseSigned/MyApp.appxupload"
+        package-path: "${{ github.workspace }}/ReleaseSigned/MyApp.msixupload"
+        delete-pending: true
+        delete-packages: true
+        packages-keep: 1
 
 
 ```
