@@ -2,10 +2,11 @@
   "name": "microsoft-store-flight-action",
   "version": "1.0.0",
   "description": "GitHub Action to upload and manage package flights in Microsoft Store. Fork of https://github.com/isaacrlevin/windows-store-action",
-  "main": "index.js",
+  "main": "out/publish.js",
   "scripts": {
+    "build": "tsc",
     "start": "ts-node-dev --respawn src/publish.ts",
-    "publish": "node --trace-warnings -r ts-node/register -r tsconfig-paths/register src/publish.ts"
+    "publish": "ncc build --source-map --license licenses.txt"
   },
   "repository": {
     "type": "git",
@@ -23,10 +24,12 @@
     "@actions/github": "^4.0.0",
     "@azure/storage-blob": "^12.4.0",
     "@types/lodash": "^4.14.168",
+    "@vercel/ncc": "^0.33.3",
     "dotenv": "^8.2.0",
     "glob": "^7.0.3",
     "jszip": "^3.1.1",
     "lodash": "^4.17.21",
+    "ncc": "^0.3.6",
     "q": "^1.4.1",
     "request": "^2.72.0",
     "save": "^2.4.0",
@@ -35,6 +38,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@octokit/types": "^6.16.2",
     "@types/node": "^13.7.1",
     "@types/q": "^1.5.5",
     "@types/request": "^2.48.8",

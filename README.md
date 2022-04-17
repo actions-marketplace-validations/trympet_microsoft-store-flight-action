@@ -52,7 +52,7 @@ This action allows you to publish your app on the Store by creating a submission
 
 * Application ID (*string, required*) - The identification for the app. Depending on your selection, this should be either the app ID (visible in the URL of the app's page on Dev Center) or the app primary name (visible on the app's page on Dev Center).
 
-* Flight ID (*string, required*) - The ID of the package flight for package submission. Check the URL in Parter Center if you are unsure.
+* Flight ID (*string, required*) - The ID of the package flight for package submission. See [Get package flights for an app](https://docs.microsoft.com/en-us/windows/uwp/monetize/get-flights-for-an-app) to determine flight id.
 
 * Delete pending submissions (*bool*) - If checked, will attempt to delete any in-progress submission before starting a new one. Note that only one submission at a time can be pending. Therefore, if this box is not checked and a submission is already pending, the task will fail. Furthermore, submissions created on the Dev Center UI cannot be deleted automatically by the task.
 
@@ -95,7 +95,10 @@ jobs:
         client-secret: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
         app-id: ${{ secrets.STORE_APP_ID }}
         flight-id: ${{ secrets.STORE_FLIGHT_ID }}
-        package-path: "${{ github.workspace }}/ReleaseSigned/MyApp.appxupload"
+        package-path: "${{ github.workspace }}/ReleaseSigned/MyApp.msixupload"
+        delete-pending: true
+        delete-packages: true
+        packages-keep: 1
 
 
 ```
