@@ -95859,7 +95859,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.persistZip = exports.updatePackageDeliveryOptions = exports.commitSubmission = exports.putSubmission = exports.createSubmission = exports.deleteSubmission = exports.getAppResource = exports.pollSubmissionStatus = exports.createZipFromPackages = exports.includePackagesInSubmission = exports.deleteOldPackages = exports.MAX_PACKAGES_PER_GROUP = exports.NUM_RETRIES = exports.ROOT = exports.API_URL_VERSION_PART = void 0;
+exports.persistZip = exports.updatePackageDeliveryOptions = exports.commitSubmission = exports.putSubmission = exports.createSubmission = exports.deleteSubmission = exports.getPendingFlightSubmissionResource = exports.getAppResource = exports.pollSubmissionStatus = exports.createZipFromPackages = exports.includePackagesInSubmission = exports.deleteOldPackages = exports.MAX_PACKAGES_PER_GROUP = exports.NUM_RETRIES = exports.ROOT = exports.API_URL_VERSION_PART = void 0;
 const request = __nccwpck_require__(6465);
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
@@ -96072,6 +96072,19 @@ function getAppResource(token, appId) {
 }
 exports.getAppResource = getAppResource;
 /**
+ * @return Promises the resource associated with a pending flight submissions; otherwise null.
+ */
+function getPendingFlightSubmissionResource(token, appId, flightId) {
+    console.debug(`Getting pending submissions`);
+    var requestParams = {
+        url: exports.ROOT + `applications/${appId}/flights/${flightId}`,
+        method: "GET",
+    };
+    var getGenerator = () => request.performAuthenticatedRequest(token, requestParams);
+    return request.withRetry(exports.NUM_RETRIES, getGenerator, (err) => request.isRetryableError(err)).then(result => { var _a; return (_a = result.pendingFlightSubmission) === null || _a === void 0 ? void 0 : _a.resourceLocation; });
+}
+exports.getPendingFlightSubmissionResource = getPendingFlightSubmissionResource;
+/**
  * @return Promises the deletion of a resource
  */
 function deleteSubmission(token, url) {
@@ -96248,7 +96261,7 @@ function uploadZip(filePath, blobUrl) {
 function makePackageEntry(pack, i) {
     return i.toString() + "_" + path.basename(pack);
 }
-
+//# sourceMappingURL=apiHelper.js.map
 
 /***/ }),
 
@@ -96506,7 +96519,7 @@ function logErrorsAndWarnings(response, body) {
         console.debug(`CorrelationId: ${response.headers['ms-correlationid']}`);
     }
 }
-
+//# sourceMappingURL=requestHelper.js.map
 
 /***/ }),
 
@@ -96515,6 +96528,25 @@ function logErrorsAndWarnings(response, body) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -96524,13 +96556,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.publishTask = void 0;
 (__nccwpck_require__(2437).config)();
-const core_1 = __importDefault(__nccwpck_require__(2186));
+const core = __importStar(__nccwpck_require__(2186));
 const fs = __nccwpck_require__(7147);
 const path = __nccwpck_require__(1017);
 const api = __nccwpck_require__(8757);
@@ -96568,6 +96597,7 @@ const STRING_ARRAY_ATTRIBUTES = {
     recommendedhardware: true,
 };
 const packageExtensions = [".msix", ".msixbundle", ".msixupload", ".appx", ".appxbundle", ".appxupload", ".xap"];
+const getInput = (name) => core.getInput(name) || process.env[name];
 /**
  * The main task function.
  */
@@ -96579,11 +96609,11 @@ function publishTask() {
         api.ROOT =
             "https://manage.devcenter.microsoft.com" + api.API_URL_VERSION_PART;
         var credentials = {
-            tenant: core_1.default.getInput("tenant-id"),
-            clientId: core_1.default.getInput("client-id"),
-            clientSecret: core_1.default.getInput("client-secret"),
+            tenant: getInput("tenant-id"),
+            clientId: getInput("client-id"),
+            clientSecret: getInput("client-secret"),
         };
-        var files = fs.readdirSync(core_1.default.getInput("package-path"));
+        var files = fs.readdirSync(getInput("package-path"));
         for (var i = 0; i < files.length; i++) {
             var file = files[i];
             for (var j = 0; j < packageExtensions.length; j++) {
@@ -96594,19 +96624,26 @@ function publishTask() {
             }
         }
         packages = packages.map((file) => {
-            return path.join(core_1.default.getInput("package-path"), file);
+            return path.join(getInput("package-path"), file);
         });
         console.log("Authenticating...");
         currentToken = yield request.authenticate("https://manage.devcenter.microsoft.com", credentials);
-        appId = core_1.default.getInput("app-id"); // Globally set app ID for future steps.
-        flightId = core_1.default.getInput("flight-id");
+        appId = getInput("app-id"); // Globally set app ID for future steps.
+        flightId = getInput("flight-id");
+        if (getInput("delete-pending") === "true") {
+            var pendingResource = yield getPendingSubmissionResource();
+            if (pendingResource) {
+                console.log(`Found pending submission`);
+                yield deleteAppSubmission(pendingResource);
+            }
+        }
         console.log("Creating submission...");
         var submissionResource = yield createAppSubmission();
         var submissionUrl = `https://developer.microsoft.com/en-us/dashboard/apps/${appId}/submissions/${submissionResource.id}`;
         console.log(`Submission ${submissionUrl} was created successfully`);
-        if (core_1.default.getInput("delete-packages") === "true") {
+        if (getInput("delete-packages") === "true") {
             console.log("Deleting old packages...");
-            api.deleteOldPackages(submissionResource.applicationPackages, +core_1.default.getInput("packages-keep"));
+            api.deleteOldPackages(submissionResource.flightPackages, +getInput("packages-keep"));
         }
         console.log("Updating submission...");
         yield putMetadata(submissionResource);
@@ -96620,7 +96657,7 @@ function publishTask() {
         }
         console.log("Committing submission...");
         yield commitAppSubmission(submissionResource.id);
-        if (core_1.default.getInput("skip-polling") === "true") {
+        if (getInput("skip-polling") === "true") {
             console.log("Skip polling option is checked. Skipping polling...");
             console.log(`Click here ${submissionUrl} to check the status of the submission in Dev Center`);
         }
@@ -96641,17 +96678,24 @@ function createAppSubmission() {
     return api.createSubmission(currentToken, api.ROOT + "applications/" + appId + "/flights/" + flightId + "/submissions");
 }
 /**
+ * Creates a submission for a given app.
+ * @return Promises the new submission resource.
+ */
+function getPendingSubmissionResource() {
+    return api.getPendingFlightSubmissionResource(currentToken, appId, flightId);
+}
+/**
  * @return Promises the deletion of a resource
  */
 function deleteAppSubmission(submissionLocation) {
-    return api.deleteSubmission(currentToken, api.ROOT + submissionLocation);
+    return api.deleteSubmission(currentToken, `${api.ROOT}applications/${appId}/${submissionLocation}`);
 }
 /**
  * @return Promises the resource associated with the application given to the task.
  */
 function getAppResource() {
     return __awaiter(this, void 0, void 0, function* () {
-        return api.getAppResource(currentToken, core_1.default.getInput("app-id"));
+        return api.getAppResource(currentToken, getInput("app-id"));
     });
 }
 /**
@@ -96710,7 +96754,7 @@ function commitAppSubmission(submissionId) {
 function putMetadata(submissionResource) {
     console.log(`Adding metadata for new submission ${submissionResource.id}`);
     // Also at this point add the given packages to the list of packages to upload.
-    api.includePackagesInSubmission(packages, submissionResource.applicationPackages);
+    api.includePackagesInSubmission(packages, submissionResource.flightPackages);
     var url = api.ROOT +
         "applications/" +
         appId +
@@ -96726,12 +96770,12 @@ function main() {
             yield publishTask();
         }
         catch (error) {
-            core_1.default.setFailed(error.message);
+            core.setFailed(error.message);
         }
     });
 }
 main();
-
+//# sourceMappingURL=publish.js.map
 
 /***/ }),
 
